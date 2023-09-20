@@ -1,0 +1,12 @@
+{
+  "mysql": {
+    "host": "localhost",
+    "database": "geocities_project"
+  },
+  "geocities": {
+    "base_dir": "E:\\",
+    "original_torrent_base_dir": "E:\\geocities\\geocities.archiveteam.torrent",
+    "blog_base_dir": "E:\\blogs",
+    "neighborhood_base_dir": "E:\\neighborhoods"
+  }
+}
