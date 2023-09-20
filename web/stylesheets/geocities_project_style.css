@@ -1,0 +1,31 @@
+body {
+    margin:0;
+    padding:0;
+    font-family: 'Oxanium', Courier, monospace;
+    background-image:url('https://magicalgrill.neocities.org/greygrid.jpg');
+    background-repeat:repeat;
+}
+
+#contentBox {
+    margin: 50px 100px 50px 100px;
+    padding: 10px 10px 10px 40px;
+    background-color:#111111;
+    border: 2px solid #ffffff;
+    color:#ffffff;
+}
+
+.quote {
+    font-style: italic;
+    color:#ffffff;
+    border: 1px solid #999999;
+    padding:0px 15px 0px 15px;
+    margin-right: 25px;
+ }
+
+.code {
+    font-weight:bold;
+    color:#ffffff;
+    border: 1px solid #999999;
+    padding:0px 15px 0px 15px;
+    margin-right: 25px;
+ }

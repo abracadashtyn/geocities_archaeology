@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Making sense of the Geocities Archive</title>
+    <link href="./stylesheets/geocities_project_style.css" media="all" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+  <div id="contentBox">
+    <h1>What is the Geocities Archive?</h1>
+    <p>An ancient (2010) torrent of even more ancient websites. In 2009, the <a href="https://wiki.archiveteam.org/index.php?title=Main_Page">Archive Team</a> scraped this data from Geocities before Yahoo! shut it down on Oct 26th, 2009. You can read more about the project to archive the data <a href="https://wiki.archiveteam.org/index.php?title=Main_Page">here</a>, and you can torrent all of this yourself <a href="https://academictorrents.com/details/2dc18f47afee0307e138dab3015ee7e5154766f6">here</a>.</p>
+
+    <p>Note to self - the original torrent description implied to me that <a href="http://www.oocities.com">oocities</a> and <a href="https://geocities.restorativland.org/">reocities</a> use this same data set, but the Archive Team's wiki page says they all have different data sets. Something to look into once all this data is processed?</p>
+
+    <p>The Archive Team also provides some <a href="https://github.com/despens/Geocities/tree/master/scripts/geocities.archiveteam.torrent">scripts</a> to help parse the contents of the torrent, but I didn't discover them until after I'd already unpacked and sorted the torrent contents. The torrent includes scripts, but not any of these scripts - the git repo is much better documented too. But the scripts are also a decade+ old, and make use of some database backup that I don't fully understand the reasoning behind - maybe the limitations of machines in that era? Personal choice? See <a href="https://github.com/despens/Geocities/blob/master/scripts/geocities.archiveteam.torrent/009-case-insensitivity-dirs.sh">this script</a> for an example of what I mean. Anyway, it has some valuable info on filename cleanup I'll use later. Here's how I ended up making sense of all of this data! </p>
+
+    <h1>Unpacking the Data</h1>
+    <p>The original torrent contains a few directories. To quote the README file:</p>
+      <div class="quote">
+          <p>Inside this torrent collection are the following directories:</p>
+          <ul>
+              <li>ARCHIVES</li>
+              <li>GEOCITIES</li>
+              <li>LOWERCASE</li>
+              <li>MEDIA</li>
+              <li>NUMBERS</li>
+              <li>SUBSITES</li>
+              <li>UPPERCASE</li>
+              <li>WORKSHOP</li>
+              <li>YAHOO</li>
+          </ul>
+        <p>MEDIA is just a quick set of press releases from Yahoo! and an mp3 interview
+            about Archive Team and the importance of saving this digital history.</p>
+
+        <p>The rest are collections of .7z files. 7z is an archive format called 7ZIP.
+        To unpack these archives, use 7zip to create... well, a bunch of large files.
+        These large files are GNU Tar archives, which will then recreate a collection
+            of directories related to Geocities. And then it gets weird.</p>
+
+        <p>As a scraper (wget) was used to get these many files, and the resulting set of
+        data was very huge, these collections of archives were then sorted down by
+        some rough headings. So UPPERCASE are Yahoo! IDs on geocities (something like
+        http://www.geocities.com/DigitalHolocaust) that started with an uppercase
+        letter. LOWERCASE are lowercase, like http://www.geocities.com/deletegeocities.
+            NUMBERS began with numbers, like http://www.geocities.com/69convent.</p>
+
+        <p>WORKSHOP is our own junkbins of lists, scripts, and other tools used for getting
+        Geocities and the URL sets we combined together with lots of google and other
+        searches to find some seeds to grab items. Almost nobody wants this, trust us,
+        we're just providing you what we generated along the way.</p>
+
+        <p>As you run scrapers, they sometimes span hosts and come out with a bunch of
+        other sites. This is what's in SUBSITES.</p>
+
+        <p>Finally, GEOCITIES is the www.geocities.com site, with TONS of links over to
+        a /geocities/YAHOOIDS directory structure that UPPERCASE, LOWERCASE, and
+            NUMBERS created.</p>
+      </div>
+
+      <h2>LOWERCASE, UPPERCASE, and NUMBERS directories</h2>
+      <p>These were all pretty similar, and I used the same process to unpack them all. When you first open each of these directories, you'll see a ton of partial 7zip files in each. In 7zip, select all of them, then extract everything using the following settings</p>
+      <img src="./images/7zip_setup_step1.PNG">
+      <p>I ended up auto-renaming most of the files that conflicted because I'm a data hoarder, and I was seeing quite a few conflicts - still not sure the cause of that. If reproducing, I would set it to auto-rename. I unpacked all of these separate directories into their own new 7zip directory - 'uppercase7zip', 'lowercase7zip', 'numbers7zip' respectively - but you could unpack them into the same dir. All these files unpack into even more files that need to be unpacked again. Select everything in the directory in the 7zip app, and unpack it all again, using the following settings.</p>
+      <img src="./images/7zip_setup_step2.PNG">
+      <p>A few notes on unpacking:</p>
+      <ul>
+          <li>The whole process takes <em>forever</em>. This is probably partially my fault - I'm working on a machine that is about 5 years old, and though it was top of the line at the time and still serves me very well, it absolutely does not have the storage space remaining for all this data. So all of this is happening on a 5TB external hard drive. It took me about 24 hours to complete the second unpacking step for the upper and lowercase directories.</li>
+          <li>Your antivirus will probably go crazy unpacking the uppercase directory, as there are a few ancient viruses hidden in the files here. <a href="./viruses.html">Check out this page for a deep dive.</a></li>
+      </ul>
+      <p>Anyway, this unpacks into a directory structure like </p>
+      <div class="code">
+          <p>E:\geocities\geocities.archiveteam.torrent\uppercase7zip\geocities\YAHOOIDS\{first_letter}\{second_letter}</p>
+          <p>where {first_letter} and {second_letter} are the first two letters of the Yahoo! ID OR neighborhood name.</p>
+      </div>
+      <p>From there, there's a series of subdirectories that will be one of the following:
+      <ul>
+          <li>A directory named for a Yahoo ID and containing the content of one user's geocities site.</li>
+          <li>A directory named for a neighborhood, which will contain more subdirectories named for each site's numeric id, and containing that site's content</li>
+      </ul>
+      <p>A note on the neighborhood affiliated sites in this collection - as far as I can tell, these are sites that were made before Yahoo acquired Geocities and required everyone to have a Yahoo ID, but this is just my hunch - I am not sure yet. I've manually pulled a list of neighborhoods from reocities referenced above, and those will be dumped into a separate directory so I can dig through their contents separately as well. I do notice that all of the referenced sites hosting old geocities pages only seem to have sites organized by neighborhood, not Yahoo ID - I wonder if that's a difference in how they prioritized what to back up, or if each YahooID site also has an affiliated neighborhood. Something to look into - and if you're by some miracle reading this, aren't me, and know the answer - <a href="mailto:abracadashtyn@gmail.com">email me!</a></p>
+
+      <p>Anyway, I want to sort this into two directories - one containing all YahooId dirs at the base level, and one containing all neighborhoods at the base level. If you want to see how I did that, <a href="https://github.com/abracadashtyn/geocities_archaeology/blob/master/py_code/scripts/relocate_blogs_and_neighborhoods.py">here's the script</a>.
+      </p>
+  </div>
+</body>
+</html>
