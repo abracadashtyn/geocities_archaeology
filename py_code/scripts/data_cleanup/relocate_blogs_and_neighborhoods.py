@@ -7,20 +7,30 @@ import shutil
 from py_code.config.config import Config
 
 dirs_to_process = [
-    "uppercase",
+    #"uppercase",
     "lowercase",
-    "numbers"
+    #"numbers"
 ]
-neighborhoods = ["Area51", "Vault", "Athens", "Acropolis", "Augusta", "Baja", "BourbonStreet", "Broadway", "CapeCanaveral", "Lab", "CapitolHill", "CollegePark", "Quad", "Colosseum", "Field", "Loge", "EnchantedForest", "Eureka", "FashionAvenue", "Fashion Avenue", "Heartland", "Plains", "Hollywood", "Hills", "HotSprings", "MadisonAvenue", "MotorCity", "NapaValley", "Nashville", "Paris", "Rue", "LeftBank", "Pentagon", "Petsburgh", "PicketFence", "Pipeline", "RainForest", "RodeoDrive", "ResearchTriangle", "SiliconValley", "Heights", "Park", "Pines", "SoHo", "Lofts", "SouthBeach", "Marina", "SunsetStrip", "Vine", "Alley", "Palms", "Studio", "Towers", "TheTropics", "Shores", "TelevisionCity", "TimesSquare", "Arcade", "Tokyo", "Vienna", "WallStreet", "Wellesley", "WestHollywood", "Yosemite"]
+neighborhoods = ["Area51", "Vault", "Athens", "Acropolis", "Augusta", "Baja", "BourbonStreet", "Broadway", "CapeCanaveral",
+                 "Lab", "CapitolHill", "CollegePark", "Quad", "Colosseum", "Field", "Loge", "EnchantedForest", "Eureka",
+                 "FashionAvenue", "Fashion Avenue", "Heartland", "Plains", "Hollywood", "Hills", "HotSprings",
+                 "MadisonAvenue", "MotorCity", "NapaValley", "Nashville", "Paris", "Rue", "LeftBank", "Pentagon",
+                 "Petsburgh", "PicketFence", "Pipeline", "RainForest", "RodeoDrive", "ResearchTriangle", "SiliconValley",
+                 "Heights", "Park", "Pines", "SoHo", "Lofts", "SouthBeach", "Marina", "SunsetStrip", "Vine", "Alley",
+                 "Palms", "Studio", "Towers", "TheTropics", "Shores", "TelevisionCity", "TimesSquare", "Arcade", "Tokyo",
+                 "Vienna", "WallStreet", "Wellesley", "WestHollywood", "Yosemite"]
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
     config = Config()
     geocities_config = config.get_geocities_config()
+    blog_base_dir = geocities_config['blog_base_dir']
+    blog_backup_dir = geocities_config['blog_backup_dir']
+
     for dir in dirs_to_process:
         # location should follow pattern \{dir}7zip\geocities\YAHOOIDS\{first_letter}\{second_letter}
-        input_location = os.path.join(geocities_config['original_torrent_base_dir'], "{0}7zip".format(dir.lower()))
-        geocities_base_dir = os.path.join(input_location, "geocities")
+        input_location = os.path.join(geocities_config['original_torrent_base_dir'], "{0}_7zip".format(dir.lower()))
+        geocities_base_dir = os.path.join(input_location, "geocities\\")
         if not os.path.isdir(geocities_base_dir):
             logging.error("ERROR: {0} is not a directory".format(geocities_base_dir))
             exit(1)
@@ -56,24 +66,19 @@ if __name__ == "__main__":
                                             l3_end_destination = os.path.join(geocities_config['neighborhood_base_dir'], l3_dir)
                                             logging.info(f"Moving Neighborhood to '{l3_end_destination}' from '{fq_l3_dir}'")
                                             shutil.move(fq_l3_dir, geocities_config['neighborhood_base_dir'])
-                                            exit(1)
                                         else:
-                                            l3_end_destination = os.path.join(geocities_config['blog_base_dir'], l3_dir)
+                                            l3_end_destination = os.path.join(blog_base_dir, l3_dir)
                                             logging.info("regular blog, moving {0} to {1}".format(fq_l3_dir, l3_end_destination))
 
-                                            # if the destination already exists, it's unclear to me if that means those
-                                            # are the same blog and are separated due to idiosyncracies when the data
-                                            # was original scraped, or if it's a different blog with the same name.
-                                            # Gonna exit here when we hit an occurrence to check it out
-                                            if os.path.isdir(l3_end_destination):
-                                                logging.error("blog directory '{0}' already exists!".format(l3_end_destination))
-                                                exit(50)
-
                                             try:
-                                                shutil.move(fq_l3_dir, geocities_config['blog_base_dir'])
+                                                shutil.move(fq_l3_dir, blog_backup_dir)
                                             except shutil.Error as e:
-                                                logging.error("ERROR: {0}".format(e))
-                                                exit(40)
+                                                if "already exists" in str(e):
+                                                    logging.warning("blog directory '{0}' already exists!".format(l3_end_destination))
+                                                    shutil.move(l3_end_destination, blog_backup_dir)
+                                                else:
+                                                    logging.error(e)
+                                                    exit(40)
 
                                     else:
                                         logging.debug("!!!Found file at l3".format(l3_dir))

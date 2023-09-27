@@ -1,6 +1,6 @@
 import keyring
 import mysql.connector
-from py_code.site_stats import SiteStats
+from py_code.classes.site_info import create_site_info_table_statement
 
 
 class MysqlConnection:
@@ -31,8 +31,7 @@ class MysqlConnection:
         cursor.close()
 
     def set_up_tables(self):
-        site_stats_table = SiteStats()
-        self.execute_sql_statement(site_stats_table.generate_create_table_statement())
+        self.execute_sql_statement(create_site_info_table_statement)
 
     def get_connection(self):
         return mysql.connector.connect(host=self.host, user=self.user, password=self.password, database=self.database)

@@ -1,4 +1,4 @@
-from py_code.mysql_connection import MysqlConnection
+from py_code.classes.mysql_connection import MysqlConnection
 from py_code.config.config import Config
 
 if __name__ == "__main__":

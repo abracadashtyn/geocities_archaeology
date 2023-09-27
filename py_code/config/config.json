@@ -3,10 +3,13 @@
     "host": "localhost",
     "database": "geocities_project"
   },
-  "geocities": {
+  "geocities_directories": {
     "base_dir": "E:\\",
     "original_torrent_base_dir": "E:\\geocities\\geocities.archiveteam.torrent",
     "blog_base_dir": "E:\\blogs",
-    "neighborhood_base_dir": "E:\\neighborhoods"
-  }
+    "neighborhood_base_dir": "E:\\neighborhoods",
+    "blog_backup_dir": "E:\\duplicate_blogs",
+    "neighborhood_backup_dir": "E:\\duplicate_neighborhoods"
+  },
+  "neighborhood_json_filename": "neighborhoods.json"
 }
